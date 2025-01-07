@@ -1,5 +1,5 @@
-name: "Java Build and Vulnerability Scan"
-description: "A reusable action to build a Java project and scan for vulnerabilities."
+#name: "Java Build and Vulnerability Scan"
+#description: "A reusable action to build a Java project and scan for vulnerabilities."
 
 inputs:
   java-version:
