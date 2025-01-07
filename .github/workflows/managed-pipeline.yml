@@ -66,9 +66,9 @@ jobs:
           registry: ${{ inputs.docker-registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.MY_PAT }}
-          
+
       - name: List Files in Context
-        run: ls -al
+        run: pwd
 
       - name: Build and Push Docker Image
         if: ${{ inputs.docker-tags }}
