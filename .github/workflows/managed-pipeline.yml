@@ -7,7 +7,10 @@ on:
         description: "The Java version to set up"
         required: true
         default: "17"
-        type: string
+        type: choice
+        options:
+          - "17"
+          - "21"
       scan-type:
         description: "The type of vulnerability scan to run"
         required: false
@@ -25,6 +28,7 @@ on:
       MY_PAT:
         description: "Personal access token for Docker registry login"
         required: true
+#TODO: remove the code checkout for each job once we start using self hosted runners
 
 jobs:
   build-code:
@@ -34,11 +38,19 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up JDK
+      - name: Set up JDK 17
+        if: ${{ inputs.java-version == '17' }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ inputs.java-version }}
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Set up JDK 21
+        if: ${{ inputs.java-version == '21' }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "temurin"
 
       - name: Build with Maven
         run: mvn compile
@@ -64,7 +76,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
+
       - name: Log in to Docker Registry
         if: ${{ inputs.docker-registry }}
         uses: docker/login-action@v2
@@ -72,9 +84,6 @@ jobs:
           registry: ${{ inputs.docker-registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.MY_PAT }}
-
-      - name: List Files in Context
-        run: pwd
 
       - name: Build and Push Docker Image
         if: ${{ inputs.docker-tags }}
