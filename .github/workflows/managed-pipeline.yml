@@ -7,7 +7,7 @@ on:
         description: "The Java version to set up"
         required: true
         default: "17"
-        type: number
+        type: string
       scan-type:
         description: "The type of vulnerability scan to run"
         required: false
