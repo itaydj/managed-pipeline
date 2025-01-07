@@ -44,6 +44,7 @@ jobs:
         shell: bash
 
   scan:
+    needs: build-code
     runs-on: ubuntu-latest
     steps:
       - name: Test for Vulnerabilities
@@ -52,6 +53,7 @@ jobs:
           scan-type: ${{ inputs.scan-type }}
 
   build-push-docker-image:
+    needs: scan
     runs-on: ubuntu-latest
     steps:
       - name: Log in to Docker Registry
