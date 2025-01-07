@@ -1,58 +1,64 @@
-#name: "Java Build and Vulnerability Scan"
-#description: "A reusable action to build a Java project and scan for vulnerabilities."
+name: "Java Build and Vulnerability Scan"
 
-inputs:
-  java-version:
-    description: "The Java version to set up"
-    required: true
-    default: "17"
-  scan-type:
-    description: "The type of vulnerability scan to run"
-    required: false
-    default: "fs"
-  docker-registry:
-    description: "Docker registry for pushing images"
-    required: true
-  docker-password:
-    description: "a token for the docker repo"
-    required: true
-  docker-tags:
-    description: "Tags for the Docker image"
-    required: true
+on:
+  workflow_call:  # Makes this a reusable workflow
+    inputs:
+      java-version:
+        description: "The Java version to set up"
+        required: true
+        default: "17"
+      scan-type:
+        description: "The type of vulnerability scan to run"
+        required: false
+        default: "fs"
+      docker-registry:
+        description: "Docker registry for pushing images"
+        required: true
+      docker-password:
+        description: "A token for the Docker registry"
+        required: true
+      docker-tags:
+        description: "Tags for the Docker image"
+        required: true
+    secrets:
+      MY_PAT:
+        description: "Personal access token for Docker registry login"
+        required: true
 
-runs:
-  using: "composite"
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ inputs.java-version }}
-        distribution: 'temurin'
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
 
-    - name: Build with Maven
-      run: mvn compile
-      shell: bash
+      - name: Build with Maven
+        run: mvn compile
+        shell: bash
 
-    - name: Test for Vulnerabilities
-      uses: aquasecurity/trivy-action@0.28.0
-      with:
-        scan-type: ${{ inputs.scan-type }}
+      - name: Test for Vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: ${{ inputs.scan-type }}
 
-    - name: Log in to Docker Registry
-      if: ${{ inputs.docker-registry }}
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ inputs.docker-registry }}
-        username: ${{ github.actor }}
-        password: ${{ inputs.docker-password }}
+      - name: Log in to Docker Registry
+        if: ${{ inputs.docker-registry }}
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.docker-registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.MY_PAT }}
 
-    - name: Build and Push Docker Image
-      if: ${{ inputs.docker-tags }}
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ inputs.docker-tags }}
+      - name: Build and Push Docker Image
+        if: ${{ inputs.docker-tags }}
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ inputs.docker-tags }}
