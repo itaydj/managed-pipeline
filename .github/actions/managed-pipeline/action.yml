@@ -31,6 +31,7 @@ runs:
 
     - name: Build with Maven
       run: mvn compile
+      shell: bash
 
     - name: Test for Vulnerabilities
       uses: aquasecurity/trivy-action@0.28.0
@@ -43,7 +44,7 @@ runs:
       with:
         registry: ${{ inputs.docker-registry }}
         username: ${{ github.actor }}
-        password: ${{ secrets.MY_PAT }}
+        password: ${{ inputs.docker-password }}
 
     - name: Build and Push Docker Image
       if: ${{ inputs.docker-tags }}
