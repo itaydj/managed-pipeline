@@ -1,16 +1,18 @@
 name: "Java Build and Vulnerability Scan"
 
 on:
-  workflow_call:  # Makes this a reusable workflow
+  workflow_call: # Makes this a reusable workflow
     inputs:
       java-version:
         description: "The Java version to set up"
         required: true
         default: "17"
+        type: number
       scan-type:
         description: "The type of vulnerability scan to run"
         required: false
         default: "fs"
+        type: string
       docker-registry:
         description: "Docker registry for pushing images"
         required: true
