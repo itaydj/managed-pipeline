@@ -13,6 +13,9 @@ inputs:
   docker-registry:
     description: "Docker registry for pushing images"
     required: true
+  docker-password:
+    description: "a token for the docker repo"
+    required: true
   docker-tags:
     description: "Tags for the Docker image"
     required: true
