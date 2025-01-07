@@ -17,10 +17,6 @@ on:
         description: "Docker registry for pushing images"
         required: true
         type: string
-      docker-password:
-        description: "A token for the Docker registry"
-        required: true
-        type: string
       docker-tags:
         description: "Tags for the Docker image"
         required: true
