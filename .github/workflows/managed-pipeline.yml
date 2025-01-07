@@ -8,7 +8,6 @@ on:
         required: true
         default: "17"
         type: string
-        deprecationMessage: "Java 17 support will be removed in the next managed pipeline version"
       scan-type:
         description: "The type of vulnerability scan to run"
         required: false
