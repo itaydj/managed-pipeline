@@ -29,7 +29,7 @@ on:
     secrets:
       MY_PAT:
         description: "Personal access token for Docker registry login"
-        required: true
+        required: false
 
 jobs:
   python-workflow:
