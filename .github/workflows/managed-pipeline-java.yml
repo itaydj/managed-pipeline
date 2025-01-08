@@ -27,6 +27,7 @@ on:
         description: "Tags for the Docker image"
         required: false
         type: string
+        default: "latest"
     secrets:
       MY_PAT:
         description: "Personal access token for Docker registry login"

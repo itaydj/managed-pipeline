@@ -5,7 +5,7 @@ inputs:
   image-name:
     description: The name of the Docker image (e.g., repo/image-name).
     required: true
-  image-tag:
+  image-tags:
     description: The tag for the Docker image (e.g., latest).
     required: true
   docker-username:
