@@ -1,0 +1,45 @@
+name: Master Workflow
+on:
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+      python-version:
+        required: false
+        type: string
+        default: "3.9"
+      java-version:
+        required: false
+        type: string
+        default: "17"
+      scan-type:
+        description: "The type of vulnerability scan to run"
+        required: false
+        default: "fs"
+        type: string
+      docker-registry:
+        description: "Docker registry for pushing images"
+        required: true
+        type: string
+      docker-tags:
+        description: "Tags for the Docker image"
+        required: true
+        type: string
+    secrets:
+      MY_PAT:
+        description: "Personal access token for Docker registry login"
+        required: true
+
+jobs:
+  python-workflow:
+    if: ${{ inputs.language == 'python' }}
+    uses: ./.github/workflows/managed-pipeline-python.yml
+    with:
+      python-version: ${{ inputs.python-version }}
+
+  java-workflow:
+    if: ${{ inputs.language == 'java' }}
+    uses: ./.github/workflows/managed-pipeline-java.yml
+    with:
+      java-version: ${{ inputs.java-version }}

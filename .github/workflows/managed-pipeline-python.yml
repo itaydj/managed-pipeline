@@ -1,0 +1,83 @@
+name: "Java Build and Vulnerability Scan"
+
+on:
+  workflow_call: # Makes this a reusable workflow
+    inputs:
+      python-version:
+        description: "The Python version to set up"
+        required: true
+        default: "3.9"
+        type: string
+      scan-type:
+        description: "The type of vulnerability scan to run"
+        required: false
+        default: "fs"
+        type: string
+      docker-registry:
+        description: "Docker registry for pushing images"
+        required: true
+        type: string
+      docker-tags:
+        description: "Tags for the Docker image"
+        required: true
+        type: string
+    secrets:
+      MY_PAT:
+        description: "Personal access token for Docker registry login"
+        required: true
+
+#TODO: remove the code checkout for each job once we start using self hosted runners
+jobs:
+  python-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
+
+  scan:
+    name: Trivy scan
+    needs: build-code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Test for Vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: ${{ inputs.scan-type }}
+
+  build-push-docker-image:
+    name: Build and push docker image
+    needs: scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Registry
+        if: ${{ inputs.docker-registry }}
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.docker-registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.MY_PAT }}
+
+      - name: Build and Push Docker Image
+        if: ${{ inputs.docker-tags }}
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ inputs.docker-tags }}
