@@ -20,9 +20,8 @@ on:
         default: "ghcr.io"
       image-name:
         description: "The docker image name"
-        required: false
+        required: true
         type: string
-        default: ${{ github.repository }}
       docker-tags:
         description: "Tags for the Docker image"
         required: false
