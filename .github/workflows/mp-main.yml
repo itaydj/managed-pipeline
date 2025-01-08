@@ -37,9 +37,13 @@ jobs:
     uses: ./.github/workflows/managed-pipeline-python.yml
     with:
       python-version: ${{ inputs.python-version }}
+      docker-registry: ${{ inputs.docker-registry }}
+      docker-tags: ${{ inputs.docker-tags }}
 
   java-workflow:
     if: ${{ inputs.language == 'java' }}
     uses: ./.github/workflows/managed-pipeline-java.yml
     with:
       java-version: ${{ inputs.java-version }}
+      docker-registry: ${{ inputs.docker-registry }}
+      docker-tags: ${{ inputs.docker-tags }}
