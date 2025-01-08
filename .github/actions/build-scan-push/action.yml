@@ -1,0 +1,45 @@
+name: Build, Scan, and Push Docker Image
+description: A composite action to build a Docker image, scan it with Trivy, and push it to a container registry.
+
+inputs:
+  image-name:
+    description: The name of the Docker image (e.g., repo/image-name).
+    required: true
+  image-tag:
+    description: The tag for the Docker image (e.g., latest).
+    required: true
+  docker-username:
+    description: Docker registry username.
+    required: true
+  docker-password:
+    description: Docker registry password.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: false
+        tags: ${{ inputs.image-name }}:${{ inputs.image-tag }}
+
+    - name: Scan Docker image
+      uses: aquasecurity/trivy-action@v0.11.0
+      with:
+        image-ref: ${{ inputs.image-name }}:${{ inputs.image-tag }}
+        severity: HIGH,CRITICAL
+        ignore-unfixed: true
+        exit-code: 1
+
+    - name: Push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        push: true
+        tags: ${{ inputs.image-name }}:${{ inputs.image-tag }}
