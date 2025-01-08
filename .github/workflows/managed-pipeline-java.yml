@@ -83,5 +83,5 @@ jobs:
           registry: ${{ inputs.docker-registry }}
           docker-username: ${{ github.actor }}
           docker-password: ${{ secrets.GITHUB_TOKEN }}
-          image-name: ${{ github.repository }}/${{ inputs.image_name }}
+          image-name: ${{ github.repository }}/${{ inputs.image-name }}
           image-tag: ${{ inputs.docker-tags }}
