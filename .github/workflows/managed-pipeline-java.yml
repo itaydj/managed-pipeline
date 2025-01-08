@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Use Composite Action
-        uses: itaydj/managed-pipeline/.github/actions/build-scan-push/action.yml@main
+        uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
         with:
           registry: ${{ inputs.docker-registry }}
           docker-username: ${{ github.actor }}
