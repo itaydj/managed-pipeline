@@ -20,12 +20,12 @@ on:
         default: "ghcr.io"
       image-name:
         description: "The docker image name"
-        required: true
+        required: false
         type: string
         default: ${{ github.repository }}
       docker-tags:
         description: "Tags for the Docker image"
-        required: true
+        required: false
         type: string
     secrets:
       MY_PAT:
@@ -84,4 +84,4 @@ jobs:
           docker-username: ${{ github.actor }}
           docker-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ${{ github.repository }}/${{ inputs.image_name }}
-          image-tag: latest
+          image-tag: ${{ inputs.docker-tags }}
