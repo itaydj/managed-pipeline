@@ -47,7 +47,7 @@ jobs:
 
   scan:
     name: Trivy scan
-    needs: build-code
+    needs: python-build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
