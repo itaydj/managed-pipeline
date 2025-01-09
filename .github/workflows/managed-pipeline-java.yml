@@ -102,6 +102,7 @@ jobs:
             $SLACK_WEBHOOK_URL
           else
             echo "No failed job detected. This shouldn't happen!"
+          fi
 #
 #
 #  notify-slack:
