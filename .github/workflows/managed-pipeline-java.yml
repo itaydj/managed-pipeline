@@ -27,10 +27,10 @@ on:
         required: false
         type: string
         default: "latest"
-    secrets:
-      SLACK_WEBHOOK_URL:
-        description: "Slack webhook for failure notification"
-        required: false
+      slack-url:
+        description: "webhook url"
+        type: string
+        default: ""
 
 #TODO: remove the code checkout for each job once we start using self hosted runners
 jobs:
@@ -82,7 +82,7 @@ jobs:
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ inputs.slack-url }}
           webhook-type: webhook-trigger
           payload: |
             text: "*GitHub Action build result*: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
