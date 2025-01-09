@@ -72,21 +72,52 @@ jobs:
           image-name: ${{ github.repository }}/${{ inputs.image-name }}
           image-tag: ${{ inputs.docker-tags }}
 
-
   notify-slack:
-    if: failure() # Only runs if the "build" job fails
-    needs: build-scan-push-image
     runs-on: ubuntu-latest
+    needs: [ build-code, build-scan-push-image ]  # List all jobs that could fail
+    if: failure()  # Trigger only if any job fails
     steps:
+      - name: Determine Failed Job
+        id: find-failed-job
+        run: |
+          FAILED_JOB=""
+          for job in build-code build-scan-push-image; do
+            STATUS="${{ needs[job].result }}"
+            if [ "$STATUS" = "failure" ]; then
+              FAILED_JOB=$job
+              break
+            fi
+          done
+          echo "Failed job: $FAILED_JOB"
+          echo "failed_job=$FAILED_JOB" >> $GITHUB_ENV
+
       - name: Send Slack Notification
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: webhook-trigger
-          payload: |
-            text: "*GitHub Action build result*: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-            blocks:
-              - type: "section"
-                text:
-                  type: "mrkdwn"
-                  text: "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          FAILED_JOB: ${{ env.failed_job }}
+        run: |
+          if [ -n "$FAILED_JOB" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"🚨 Workflow failed in job: $FAILED_JOB\"}" \
+            $SLACK_WEBHOOK_URL
+          else
+            echo "No failed job detected. This shouldn't happen!"
+#
+#
+#  notify-slack:
+#    if: ${{ failure() }}
+#    needs: build-scan-push-image
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Send Slack Notification
+#        uses: slackapi/slack-github-action@v2.0.0
+#        with:
+#          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+#          webhook-type: webhook-trigger
+#          payload: |
+#            text: "*GitHub Action build result*: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+#            blocks:
+#              - type: "section"
+#                text:
+#                  type: "mrkdwn"
+#                  text: "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
