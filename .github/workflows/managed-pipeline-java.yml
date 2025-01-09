@@ -83,9 +83,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          echo "Fetching workflow details for run ID: ${{ env.$RUN_ID }}"
+          echo "Fetching workflow details for run ID: ${{ env.RUN_ID }}"
           curl -s -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ env.$RUN_ID }}" > run_details.json
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ env.RUN_ID }}" > run_details.json
           echo "Workflow details fetched successfully."
 
       - name: Parse and Extract Failure Details
