@@ -27,13 +27,9 @@ on:
         required: false
         type: string
         default: "latest"
-      slack-webhook:
-        description: "Slack webhook for failure notification"
-        type: string
-        default: ""
     secrets:
-      MY_PAT:
-        description: "Personal access token for Docker registry login"
+      SLACK_WEBHOOK_URL:
+        description: "Slack webhook for failure notification"
         required: false
 
 #TODO: remove the code checkout for each job once we start using self hosted runners
@@ -86,7 +82,7 @@ jobs:
       - name: Send Slack Notification
         uses: slackapi/slack-github-action@v2.0.0
         with:
-          webhook: ${{ inputs.slack-webhook }}
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: webhook-trigger
           payload: |
             text: "*GitHub Action build result*: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
