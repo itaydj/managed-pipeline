@@ -92,7 +92,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Production deployment check failed* :fire_engine:\n High error rate detected after deployment! Rolling back..."
+                    "text": "*Build failed for ${{ github.repository }}*"
                   }
                 },
                 {
@@ -102,38 +102,11 @@ jobs:
                       "type": "button",
                       "text": {
                         "type": "plain_text",
-                        "text": ":github: Failed action"
+                        "text": "Click here for more details"
                       },
                       "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    },
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": ":grafana: Grafana dashboard"
-                      },
-                      "url": "https://<your_organization>.grafana.net/d/my-app-dashboard?from=now-1h&to=now"
                     }
                   ]
                 }
               ]
             }
-
-
-#
-#            - name: Send Slack Notification
-#        uses: slackapi/slack-github-action@v2.0.0
-#        env:
-#          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-#          FAILED_JOB: ${{ env.failed_job }}
-#          FAILED_STAGE: ${{ env.failed_stage }}
-#        with:
-#          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-#          webhook-type: webhook-trigger
-#          payload: |
-#            text: "*GitHub Action build result*: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-#            blocks:
-#              - type: "section"
-#                text:
-#                  type: "mrkdwn"
-#                  text: "GitHub Action build result: ${{ env.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
