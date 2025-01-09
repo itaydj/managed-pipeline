@@ -72,6 +72,34 @@ jobs:
           image-name: ${{ github.repository }}/${{ inputs.image-name }}
           image-tag: ${{ inputs.docker-tags }}
 
+  notify:
+    runs-on: ubuntu-latest
+    needs: build  # Only runs if the build job fails
+    if: failure()  # Run only on failure
+    steps:
+      - name: Fetch Workflow Run Details
+        id: fetch-run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          echo "Fetching workflow details for run ID: $RUN_ID"
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID" > run_details.json
+          echo "Workflow details fetched successfully."
+
+      - name: Parse and Extract Failure Details
+        id: parse-run
+        run: |
+          # Extract specific details using jq (JSON processor)
+          FAILED_JOB=$(jq -r '.jobs[].name' run_details.json)
+          FAILED_STATUS=$(jq -r '.conclusion' run_details.json)
+          echo "Failed Job: $FAILED_JOB"
+          echo "Failed Status: $FAILED_STATUS"
+          echo "failed_job=$FAILED_JOB" >> $GITHUB_ENV
+          echo "failed_status=$FAILED_STATUS" >> $GITHUB_ENV
+
+
       - name: notify slack
         id: slack
         uses: slackapi/slack-github-action@v2.0.0
@@ -79,7 +107,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           FAILED_JOB: ${{ env.failed_job }}
-          FAILED_STAGE: ${{ env.failed_stage }}
+          FAILED_STATUS: ${{ env.failed_status }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -92,7 +120,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Build failed for ${{ github.repository }}*"
+                    "text": "*Build failed for ${{ github.repository }}, job is $FAILED_JOB, status is $FAILED_STATUS  *"
                   }
                 },
                 {
