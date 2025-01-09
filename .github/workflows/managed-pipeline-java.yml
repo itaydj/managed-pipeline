@@ -84,7 +84,6 @@ jobs:
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: webhook-trigger
-          channel-id: 'C087T3QGQN7' # slack channel #alerts-test
           payload: |
             {
               "text": "GitHub Action failed",
