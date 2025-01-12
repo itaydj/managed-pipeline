@@ -74,68 +74,44 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    needs: build-scan-push-image  # Only runs if the build job fails
+    needs: build-scan-push-image  # Only runs if the dependent job fails
     if: failure()  # Run only on failure
     steps:
-      - name: Fetch Workflow Run Details
-        id: fetch-run
+      - name: Fetch Workflow Job Details
+        id: fetch-jobs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.run_id }}
         run: |
-          echo "Fetching workflow details for run ID: ${{ GITHUB_RUN_ID }}"
-          curl -s -H "Authorization: Bearer ${{ env.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ GITHUB_RUN_ID }}" > run_details.json
-          cat run_details.json
-          echo "Workflow details fetched successfully."
+          echo "Fetching job details for run ID: $RUN_ID"
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" > jobs_details.json
+          cat jobs_details.json
 
-      - name: Parse and Extract Failure Details
-        id: parse-run
+      - name: Parse and Extract Failed Job Details
+        id: parse-failure
         run: |
-          cat run_details.json
-          FAILED_JOB=$(jq -r '.jobs[].name' run_details.json)
-          FAILED_STATUS=$(jq -r '.conclusion' run_details.json)
+          FAILED_JOB=$(jq -r '.jobs[] | select(.conclusion == "failure") | .name' jobs_details.json)
           echo "Failed Job: $FAILED_JOB"
-          echo "Failed Status: $FAILED_STATUS"
           echo "failed_job=$FAILED_JOB" >> $GITHUB_ENV
-          echo "failed_status=$FAILED_STATUS" >> $GITHUB_ENV
 
-
-      - name: notify slack
+      - name: Notify Slack
         id: slack
         uses: slackapi/slack-github-action@v2.0.0
-        if: ${{ failure() }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           FAILED_JOB: ${{ env.failed_job }}
-          FAILED_STATUS: ${{ env.failed_status }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-          webhook-type: webhook-trigger
           payload: |
             {
-              "text": "GitHub Action failed",
+              "text": "🚨 GitHub Action Failed: ${{ github.repository }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Build failed for ${{ github.repository }}, job is ${{ env.FAILED_JOB }}, status is ${{ env.FAILED_STATUS }}  *"
+                    "text": "*Workflow*: ${{ github.workflow }}\n*Job*: ${{ env.failed_job }}\n*Run Details*: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
                   }
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "Click here for more details"
-                      },
-                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }
-                  ]
                 }
               ]
             }
