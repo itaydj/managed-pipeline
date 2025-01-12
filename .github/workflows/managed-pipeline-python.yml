@@ -45,39 +45,16 @@ jobs:
       - name: Run tests
         run: pytest
 
-  scan:
-    name: Trivy scan
-    needs: python-build-and-test
+  build-scan-push-image:
+    name: Build scan and push docker image
+    needs: build-code
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Test for Vulnerabilities
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          scan-type: ${{ inputs.scan-type }}
-
-  build-push-docker-image:
-    name: Build and push docker image
-    needs: scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Log in to Docker Registry
-        if: ${{ inputs.docker-registry }}
-        uses: docker/login-action@v2
+      - name: Build scan and push docker image
+        uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
         with:
           registry: ${{ inputs.docker-registry }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.MY_PAT }}
-
-      - name: Build and Push Docker Image
-        if: ${{ inputs.docker-tags }}
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ inputs.docker-tags }}
+          docker-username: ${{ github.actor }}
+          docker-password: ${{ secrets.GITHUB_TOKEN }}
+          image-name: ${{ github.repository }}/${{ inputs.image-name }}
+          image-tag: ${{ inputs.docker-tags }}
