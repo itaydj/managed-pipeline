@@ -85,7 +85,7 @@ jobs:
         run: |
           echo "Fetching job details for run ID: $RUN_ID"
           curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" > jobs_details.json
+            "https://api.github.com/repos/itaydj/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" > jobs_details.json
           cat jobs_details.json
 
       - name: Parse and Extract Failed Job Details
