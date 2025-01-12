@@ -44,7 +44,7 @@ jobs:
 
     permissions:
       packages: write  # Required to push to GitHub Packages
-#      contents: read
+      contents: read
 
     steps:
       - name: Checkout Code
