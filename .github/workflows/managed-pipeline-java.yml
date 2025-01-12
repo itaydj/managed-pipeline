@@ -63,7 +63,7 @@ jobs:
         run: mvn compile
         shell: bash
 
-      - name: Configure Maven for GitHub Packages
+      - name: Publish to GitHub Packages
         if: ${{ inputs.publish_artifact == true }}
         run: |
           mkdir -p ~/.m2
@@ -76,12 +76,14 @@ jobs:
                  </server>
                </servers>
              </settings>" > ~/.m2/settings.xml
-
-      - name: Build and Publish to GitHub Packages
-        if: ${{ inputs.publish_artifact == true }}
-        run: |
           mvn clean package
           mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
+
+#      - name: Build and Publish to GitHub Packages
+#        if: ${{ inputs.publish_artifact == true }}
+#        run: |
+#          mvn clean package
+#          mvn deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}
 
   build-scan-push-image:
     name: Build scan and push docker image
