@@ -41,6 +41,11 @@ jobs:
   build-code:
     name: Build Code
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write  # Required to push to GitHub Packages
+      contents: read
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
