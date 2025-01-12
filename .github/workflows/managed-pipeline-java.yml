@@ -45,7 +45,7 @@ jobs:
     permissions:
       packages: write  # Required to push to GitHub Packages
       contents: read
-      
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
