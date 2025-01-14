@@ -48,7 +48,7 @@ jobs:
 
   build-scan-push-image:
     name: Build scan and push docker image
-    needs: build-code
+    needs: python-build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Build scan and push docker image
