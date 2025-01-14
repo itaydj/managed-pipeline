@@ -13,14 +13,15 @@ on:
         required: false
         default: "fs"
         type: string
-      docker-registry:
-        description: "Docker registry for pushing images"
-        required: false
-        type: string
       docker-tags:
         description: "Tags for the Docker image"
         required: true
         type: string
+      docker-registry:
+        description: "Docker registry for pushing images"
+        required: false
+        type: string
+        default: "ghcr.io"
     secrets:
       MY_PAT:
         description: "Personal access token for Docker registry login"
