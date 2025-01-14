@@ -13,6 +13,10 @@ on:
         required: false
         default: "fs"
         type: string
+      image-name:
+        description: "The docker image name"
+        required: true
+        type: string
       docker-tags:
         description: "Tags for the Docker image"
         required: true
