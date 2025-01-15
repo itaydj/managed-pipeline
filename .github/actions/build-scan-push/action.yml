@@ -21,12 +21,10 @@ inputs:
     type: string
     default: "ghcr.io"
   docker-image-full-name:
-    description: "the full image name with its tag"
+    description: "the full docker image: repo/imagename:tag"
     required: false
     type: string
-    default: "${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}"
-
-
+    default: "hello-world"
 
 runs:
   using: "composite"

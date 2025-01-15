@@ -27,10 +27,17 @@ on:
         required: false
         type: string
         default: "ghcr.io"
+      docker-image-full-name:
+        description: "the full image name with its tag"
+        required: false
+        type: string
+        default: "${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-tags }}"
+
     secrets:
       MY_PAT:
         description: "Personal access token for Docker registry login"
         required: false
+
 
 #TODO: remove the code checkout for each job once we start using self hosted runners
 jobs:
@@ -59,8 +66,11 @@ jobs:
       - name: Build scan and push docker image
         uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
         with:
-          registry: ${{ inputs.docker-registry }}
+#          registry: ${{ inputs.docker-registry }}
           docker-username: ${{ github.actor }}
           docker-password: ${{ secrets.GITHUB_TOKEN }}
-          image-name: ${{ github.repository }}/${{ inputs.image-name }}
-          image-tag: ${{ inputs.docker-tags }}
+          image-name: ${{ inputs.docker-image-full-name }}
+#          image-tag: ${{ inputs.docker-tags }}
+
+
+  default: "${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}"
