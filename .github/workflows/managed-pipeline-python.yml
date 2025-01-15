@@ -46,7 +46,7 @@ on:
 
 #TODO: remove the code checkout for each job once we start using self hosted runners
 jobs:
-  python-build:
+  python-setup:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -62,7 +62,7 @@ jobs:
 
   run-tests:
     runs-on: ubuntu-latest
-    needs: dependencies-and-tests
+    needs: python-setup
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
