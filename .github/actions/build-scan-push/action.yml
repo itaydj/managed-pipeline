@@ -43,12 +43,12 @@ runs:
       uses: docker/build-push-action@v4
       with:
         push: false
-        tags: ${{ inputs.docker-image-full-name }}
+        tags: ${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}
 
     - name: Scan Docker image
       uses: aquasecurity/trivy-action@0.28.0
       with:
-        image-ref: ${{ inputs.docker-image-full-name }}
+        image-ref: ${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}
         severity: HIGH,CRITICAL
         ignore-unfixed: true
         exit-code: 1
@@ -57,4 +57,4 @@ runs:
       uses: docker/build-push-action@v4
       with:
         push: true
-        tags: ${{ inputs.docker-image-full-name }}
+        tags: ${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}
