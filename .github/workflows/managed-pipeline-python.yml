@@ -21,6 +21,7 @@ on:
         description: "Tags for the Docker image"
         required: true
         type: string
+        default: "latest"
       docker-registry:
         description: "Docker registry for pushing images"
         required: false
