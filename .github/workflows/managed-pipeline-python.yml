@@ -15,11 +15,11 @@ on:
         type: string
       image-name:
         description: "The docker image name"
-        required: true
+        required: false
         type: string
       docker-tags:
         description: "Tags for the Docker image"
-        required: true
+        required: false
         type: string
         default: "latest"
       docker-registry:
