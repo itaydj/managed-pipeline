@@ -46,7 +46,7 @@ on:
 
 #TODO: remove the code checkout for each job once we start using self hosted runners
 jobs:
-  python-build-and-test:
+  python-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -60,8 +60,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-  Run-tests:
+  run-tests:
     run-on: ubuntu-latest
+    needs: python-build
     steps:
       - name: Run tests
         if: ${{ inputs.code-coverage == false }}
@@ -81,15 +82,12 @@ jobs:
           git commit -m "Update coverage badge"
           git push
 
-  build-scan-push-image:
+  Build scan and push docker image:
+    needs: run-tests
     run-on: ubuntu-latest
     steps:
-      name: Build scan and push docker image
-      needs: python-build-and-test
-      runs-on: ubuntu-latest
-      steps:
-        - name: Build scan and push docker image
-          uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
-          with:
-            docker-username: ${{ github.actor }}
-            docker-password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build scan and push docker image
+        uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
+        with:
+          docker-username: ${{ github.actor }}
+          docker-password: ${{ secrets.GITHUB_TOKEN }}
