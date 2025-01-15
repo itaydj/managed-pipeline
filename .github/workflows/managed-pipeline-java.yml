@@ -25,7 +25,7 @@ on:
         default: "ghcr.io"
       image-name:
         description: "The docker image name"
-        required: true
+        required: false
         type: string
       docker-tags:
         description: "Tags for the Docker image"
