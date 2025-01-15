@@ -32,6 +32,11 @@ on:
         required: false
         type: string
         default: "${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-tags }}"
+      code-coverage:
+        description: "generate coverage report"
+        required: false
+        type: boolean
+        default: false
 
     secrets:
       MY_PAT:
@@ -55,8 +60,26 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+  Run-tests:
+    run-on: ubuntu-latest
+    steps:
       - name: Run tests
+        if: ${{ inputs.code-coverage == false }}
         run: pytest
+      - name: Run tests and coverage
+        if: ${{ inputs.code-coverage == true }}
+        run: |
+          pytest --cov=. --cov-report=xml
+          genbadge coverage --input-file coverage.xml --output-file coverage-badge.svg
+
+      - name: Commit coverage badge
+        if: ${{ inputs.code-coverage == true }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add coverage-badge.svg
+          git commit -m "Update coverage badge"
+          git push
 
   build-scan-push-image:
     name: Build scan and push docker image
