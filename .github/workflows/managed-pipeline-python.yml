@@ -82,7 +82,7 @@ jobs:
           git commit -m "Update coverage badge"
           git push
 
-  Build scan and push docker image:
+  build-scan-push-docker-image:
     needs: run-tests
     runs-on: ubuntu-latest
     steps:
