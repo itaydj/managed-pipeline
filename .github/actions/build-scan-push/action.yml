@@ -24,7 +24,7 @@ inputs:
     description: "the full image name with its tag"
     required: false
     type: string
-    default: "${{docker-registry}}/${{ github.repository }}:${{image-latest}}"
+    default: "${{ inputs.docker-registry }}/${{ github.repository }}:${{ inputs.image-latest }}"
 
 
 
