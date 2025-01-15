@@ -61,7 +61,7 @@ jobs:
         run: pip install -r requirements.txt
 
   run-tests:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: python-build
     steps:
       - name: Run tests
@@ -84,7 +84,7 @@ jobs:
 
   Build scan and push docker image:
     needs: run-tests
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Build scan and push docker image
         uses: itaydj/managed-pipeline/.github/actions/build-scan-push@main
