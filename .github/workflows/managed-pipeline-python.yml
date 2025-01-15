@@ -69,9 +69,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest pytest-cov genbadge defusedxml
-      - name: Run tests
-        if: ${{ inputs.code-coverage == false }}
-        run: pytest
       - name: Run tests and coverage
         if: ${{ inputs.code-coverage == true }}
         run: |
