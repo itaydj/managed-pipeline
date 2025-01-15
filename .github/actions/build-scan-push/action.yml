@@ -4,17 +4,17 @@ description: A composite action to build a Docker image, scan it with Trivy, and
 inputs:
   image-name:
     description: The name of the Docker image (e.g., repo/image-name).
-    required: true
+    required: false
   image-tags:
     description: The tag for the Docker image (e.g., latest).
     required: false
     default: "latest"
   docker-username:
     description: Docker registry username.
-    required: true
+    required: false
   docker-password:
     description: Docker registry password.
-    required: true
+    required: false
   docker-registry:
     description: "Docker registry for pushing images"
     required: false
