@@ -38,7 +38,8 @@ runs:
       uses: docker/build-push-action@v4
       with:
         push: false
-        tags: ${{ inputs.image-name }}:${{ inputs.image-tag }}
+#        tags: ${{ inputs.image-name }}:${{ inputs.image-tag }}
+        tags: "blah/blue:talest"
 
     - name: Scan Docker image
       uses: aquasecurity/trivy-action@0.28.0
